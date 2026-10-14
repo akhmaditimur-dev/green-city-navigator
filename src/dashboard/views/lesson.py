@@ -11,10 +11,10 @@ from auth_utils import is_logged_in, auth_headers
 
 API = "http://api:8000"
 
-st.set_page_config(page_title="Урок — Green City Navigator", page_icon="📖", layout="wide")
+# st.set_page_config(page_title="Урок — Green City Navigator", page_icon="📖", layout="wide")
 
 inject_css()
-lang_switch()
+
 header(lang=get_lang())
 
 lesson_id = st.session_state.get("selected_lesson")
@@ -25,7 +25,7 @@ if not lesson_id:
 if not is_logged_in():
     st.warning("Войдите, чтобы смотреть уроки")
     if st.button("Войти"):
-        st.switch_page("pages/0_Login.py")
+        st.switch_page("views/login.py")
     st.stop()
 
 try:
@@ -70,6 +70,6 @@ else:
             st.rerun()
 
 if st.button("← К курсу"):
-    st.switch_page("pages/7_Course.py")
+    st.switch_page("views/course.py")
 
 footer(lang=get_lang())

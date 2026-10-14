@@ -11,10 +11,9 @@ from auth_utils import set_token, is_logged_in
 
 API = "http://api:8000"
 
-st.set_page_config(page_title="Регистрация — Green City Navigator", page_icon="📝", layout="centered")
+# st.set_page_config(page_title="Регистрация — Green City Navigator", page_icon="📝", layout="centered")
 
 inject_css()
-lang_switch()
 
 if is_logged_in():
     st.success("Вы уже вошли")

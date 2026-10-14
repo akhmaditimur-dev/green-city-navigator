@@ -35,7 +35,7 @@ services:
   dashboard:
     build: .
     container_name: gcn_dashboard
-    command: streamlit run src/dashboard/app.py --server.port 8501 --server.address 0.0.0.0
+    command: streamlit run src/dashboard/Home.py --server.port 8501 --server.address 0.0.0.0
     ports:
       - "8501:8501"
     depends_on:

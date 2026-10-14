@@ -11,15 +11,14 @@ from auth_utils import set_token, is_logged_in
 
 API = "http://api:8000"
 
-st.set_page_config(page_title="Вход — Green City Navigator", page_icon="🔐", layout="centered")
+# st.set_page_config(page_title="Вход — Green City Navigator", page_icon="🔐", layout="centered")
 
 inject_css()
-lang_switch()
 
 if is_logged_in():
     st.success("Вы уже вошли")
     if st.button("Перейти в профиль"):
-        st.switch_page("pages/5_Profile.py")
+        st.switch_page("views/profile.py")
     st.stop()
 
 st.title("🔐 Вход")
@@ -44,7 +43,7 @@ with st.form("login_form"):
                     data = r.json()
                     set_token(data["access_token"], data["user"])
                     st.success("Вход выполнен")
-                    st.switch_page("pages/5_Profile.py")
+                    st.switch_page("views/profile.py")
                 elif r.status_code == 401:
                     st.error("Неверный логин или пароль")
                 elif r.status_code == 423:

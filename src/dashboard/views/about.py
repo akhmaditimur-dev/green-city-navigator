@@ -7,10 +7,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from styles import inject_css, header, footer
 from i18n import t, lang_switch, get_lang
 
-st.set_page_config(page_title="О проекте — Green City Navigator", page_icon="ℹ️", layout="wide")
+# st.set_page_config(page_title="О проекте — Green City Navigator", page_icon="ℹ️", layout="wide")
 
 inject_css()
-lang_switch()
+
 header(lang=get_lang())
 
 st.title(f"ℹ️ {t('about_title')}")

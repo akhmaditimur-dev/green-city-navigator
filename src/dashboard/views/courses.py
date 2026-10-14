@@ -11,10 +11,10 @@ from auth_utils import is_logged_in
 
 API = "http://api:8000"
 
-st.set_page_config(page_title="Курсы — Green City Navigator", page_icon="📚", layout="wide")
+# st.set_page_config(page_title="Курсы — Green City Navigator", page_icon="📚", layout="wide")
 
 inject_css()
-lang_switch()
+
 header(lang=get_lang())
 
 st.title("📚 Курсы")
@@ -66,6 +66,6 @@ for i, c in enumerate(courses):
 
         if st.button(f"Открыть курс", key=f"course_{c['id']}"):
             st.session_state.selected_course = c["id"]
-            st.switch_page("pages/7_Course.py")
+            st.switch_page("views/course.py")
 
 footer(lang=get_lang())

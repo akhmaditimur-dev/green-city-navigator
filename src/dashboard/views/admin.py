@@ -12,10 +12,9 @@ from auth_utils import require_login, get_user, auth_headers
 
 API = "http://api:8000"
 
-st.set_page_config(page_title="Админ-панель — Green City Navigator", page_icon="🔧", layout="wide")
+# st.set_page_config(page_title="Админ-панель — Green City Navigator", page_icon="🔧", layout="wide")
 
 inject_css()
-lang_switch()
 
 require_login()
 

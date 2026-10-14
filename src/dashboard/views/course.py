@@ -11,17 +11,17 @@ from auth_utils import is_logged_in, get_token, auth_headers
 
 API = "http://api:8000"
 
-st.set_page_config(page_title="Курс — Green City Navigator", page_icon="📖", layout="wide")
+# st.set_page_config(page_title="Курс — Green City Navigator", page_icon="📖", layout="wide")
 
 inject_css()
-lang_switch()
+
 header(lang=get_lang())
 
 course_id = st.session_state.get("selected_course")
 if not course_id:
     st.warning("Курс не выбран")
     if st.button("← К каталогу"):
-        st.switch_page("pages/6_Courses.py")
+        st.switch_page("views/courses.py")
     st.stop()
 
 # Данные курса
@@ -58,7 +58,7 @@ if is_logged_in():
 else:
     st.info("Войдите, чтобы записаться на курс")
     if st.button("Войти"):
-        st.switch_page("pages/0_Login.py")
+        st.switch_page("views/login.py")
 
 st.markdown("---")
 st.subheader("Уроки")
@@ -75,10 +75,10 @@ else:
         with col2:
             if st.button("Открыть", key=f"lesson_{lesson['id']}"):
                 st.session_state.selected_lesson = lesson["id"]
-                st.switch_page("pages/8_Lesson.py")
+                st.switch_page("views/lesson.py")
 
 st.markdown("---")
 if st.button("← К каталогу"):
-    st.switch_page("pages/6_Courses.py")
+    st.switch_page("views/courses.py")
 
 footer(lang=get_lang())

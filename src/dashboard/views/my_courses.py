@@ -11,10 +11,10 @@ from auth_utils import require_login, auth_headers
 
 API = "http://api:8000"
 
-st.set_page_config(page_title="Мои курсы — Green City Navigator", page_icon="📚", layout="wide")
+# st.set_page_config(page_title="Мои курсы — Green City Navigator", page_icon="📚", layout="wide")
 
 inject_css()
-lang_switch()
+
 header(lang=get_lang())
 
 require_login()
@@ -31,7 +31,7 @@ except Exception as e:
 if not courses:
     st.info("Вы ещё не записаны ни на один курс")
     if st.button("← Перейти в каталог"):
-        st.switch_page("pages/6_Courses.py")
+        st.switch_page("views/courses.py")
     st.stop()
 
 for c in courses:
@@ -44,10 +44,10 @@ for c in courses:
         with col2:
             if st.button("Открыть", key=f"my_course_{c['course_id']}"):
                 st.session_state.selected_course = c["course_id"]
-                st.switch_page("pages/7_Course.py")
+                st.switch_page("views/course.py")
         st.markdown("---")
 
 if st.button("← Перейти в каталог"):
-    st.switch_page("pages/6_Courses.py")
+    st.switch_page("views/courses.py")
 
 footer(lang=get_lang())

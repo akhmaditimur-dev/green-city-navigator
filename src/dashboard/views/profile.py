@@ -11,10 +11,9 @@ from auth_utils import require_login, get_user, get_token, logout, auth_headers
 
 API = "http://api:8000"
 
-st.set_page_config(page_title="Профиль — Green City Navigator", page_icon="👤", layout="wide")
+# st.set_page_config(page_title="Профиль — Green City Navigator", page_icon="👤", layout="wide")
 
 inject_css()
-lang_switch()
 
 require_login()
 
@@ -27,7 +26,7 @@ with col1:
 with col2:
     if st.button("Выйти"):
         logout()
-        st.switch_page("pages/0_Login.py")
+        st.switch_page("views/login.py")
 
 st.caption(f"Логин: **{user['username']}** · Роль: **{user['role']}**")
 
@@ -48,7 +47,7 @@ try:
     elif r.status_code == 401:
         st.error("Сессия истекла. Войдите заново.")
         logout()
-        st.switch_page("pages/0_Login.py")
+        st.switch_page("views/login.py")
 except Exception as e:
     st.error(f"Ошибка: {e}")
 
@@ -95,6 +94,6 @@ if user["role"] in ("admin", "superadmin"):
     st.subheader("🔧 Админ-панель")
     st.markdown("Управление пользователями и приглашениями")
     if st.button("Открыть админ-панель", key="admin"):
-        st.switch_page("pages/9_Admin.py")
+        st.switch_page("views/admin.py")
 
 footer(lang=get_lang())
