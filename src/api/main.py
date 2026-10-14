@@ -9,6 +9,7 @@ from src.auth.init_admins import init_superadmins
 from src.auth.routes import router as auth_router
 from src.admin.routes import router as admin_router
 from src.lms.routes import router as lms_router
+from src.api.heat_routes import router as heat_router
 
 app = FastAPI(title="Green City Navigator")
 
@@ -20,6 +21,7 @@ def startup_event():
 app.include_router(auth_router)
 app.include_router(admin_router)
 app.include_router(lms_router)
+app.include_router(heat_router)
 
 
 @app.get("/")

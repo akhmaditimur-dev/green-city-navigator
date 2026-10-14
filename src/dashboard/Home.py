@@ -30,6 +30,7 @@ def build_navigation():
         st.Page("views/home_content.py", title="Обзор", icon=":material/home:", default=True),
         st.Page("views/air.py", title="Воздух", icon=":material/air:"),
         st.Page("views/water.py", title="Вода", icon=":material/water_drop:"),
+        st.Page("views/heat.py", title="Тепло", icon=":material/thermostat:"),
         st.Page("views/participate.py", title="Участие", icon=":material/campaign:"),
     ]
 
