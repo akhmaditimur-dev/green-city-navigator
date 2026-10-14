@@ -7,6 +7,7 @@ from src.db.models import SessionLocal, Station, Measurement
 
 from src.auth.init_admins import init_superadmins
 from src.auth.routes import router as auth_router
+from src.admin.routes import router as admin_router
 
 app = FastAPI(title="Green City Navigator")
 
@@ -16,6 +17,7 @@ def startup_event():
     init_superadmins()
 
 app.include_router(auth_router)
+app.include_router(admin_router)
 
 
 @app.get("/")
