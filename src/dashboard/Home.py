@@ -81,3 +81,35 @@ if st.sidebar.button(theme_label, key="theme_switch", use_container_width=True):
 # --- Запуск выбранной страницы ---
 pg = build_navigation()
 pg.run()
+
+# --- Метка активной страницы (после отрисовки) ---
+import streamlit.components.v1 as components
+
+# Скрытый JS, который ставит класс .nav-active на активную ссылку
+components.html(
+    """
+    <script>
+    (function() {
+        const applyActive = () => {
+            const parent = window.parent.document;
+            const links = parent.querySelectorAll('[data-testid="stSidebarNav"] a');
+            links.forEach(a => {
+                const isActive = a.getAttribute('aria-current') === 'page'
+                    || a.classList.contains('active')
+                    || a.dataset.active === 'true';
+                if (isActive) {
+                    a.style.setProperty('background-color', '#c6d3a2', 'important');
+                    a.style.setProperty('color', '#2d3f18', 'important');
+                    a.style.setProperty('font-weight', '700', 'important');
+                    a.classList.add('nav-active');
+                }
+            });
+        };
+        applyActive();
+        setTimeout(applyActive, 100);
+        setTimeout(applyActive, 500);
+    })();
+    </script>
+    """,
+    height=0,
+)

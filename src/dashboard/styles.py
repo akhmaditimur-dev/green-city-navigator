@@ -14,6 +14,14 @@ COLORS = {
     "border": "#e2e8f0",
     "border_strong": "#cbd5e1",
 
+    # Сайдбар — оливковый
+    "sidebar_bg": "#e8eeda",
+    "sidebar_border": "#d1dcb5",
+    "sidebar_text": "#4a5e2a",
+    "sidebar_hover": "#d6e0bc",
+    "sidebar_active_bg": "#c6d3a2",      # активная — на 2 тона темнее
+    "sidebar_active_text": "#2d3f18",
+
     # Акценты модулей
     "air_light": "#e0f2fe",
     "air": "#7dd3fc",
@@ -35,7 +43,6 @@ COLORS = {
     "climate": "#c4b5fd",
     "climate_dark": "#7c3aed",
 
-    # Статусы
     "success": "#16a34a",
     "warning": "#ea580c",
     "danger": "#dc2626",
@@ -56,9 +63,7 @@ def inject_css():
             -webkit-font-smoothing: antialiased;
         }}
 
-        .stApp {{
-            background: {COLORS['bg']};
-        }}
+        .stApp {{ background: {COLORS['bg']}; }}
 
         .block-container {{
             padding-top: 2rem !important;
@@ -66,7 +71,6 @@ def inject_css():
             max-width: 1280px !important;
         }}
 
-        /* === ЗАГОЛОВКИ === */
         h1 {{
             font-size: 2.5rem !important;
             font-weight: 700 !important;
@@ -97,37 +101,162 @@ def inject_css():
             letter-spacing: 0.05em;
         }}
 
-        p, li {{
-            color: {COLORS['text']};
-            line-height: 1.6;
+        p, li {{ color: {COLORS['text']}; line-height: 1.6; }}
+
+        /* ============ САЙДБАР (СВЕТЛАЯ) ============ */
+        [data-testid="stSidebar"],
+        section[data-testid="stSidebar"],
+        [data-testid="stSidebar"] > div:first-child,
+        [data-testid="stSidebar"] > div,
+        [data-testid="stSidebarContent"],
+        [data-testid="stSidebarUserContent"],
+        [data-testid="stSidebarNav"] {{
+            background: {COLORS['sidebar_bg']} !important;
+            background-color: {COLORS['sidebar_bg']} !important;
+            border-color: {COLORS['sidebar_border']} !important;
         }}
 
-        /* === САЙДБАР === */
-        [data-testid="stSidebar"] {{
-            background: {COLORS['bg_soft']};
-            border-right: 1px solid {COLORS['border']};
+        /* Текст — болотный */
+        [data-testid="stSidebar"],
+        [data-testid="stSidebar"] *,
+        [data-testid="stSidebarNav"] * {{
+            color: {COLORS['sidebar_text']} !important;
         }}
-        [data-testid="stSidebar"] > div:first-child {{
-            padding-top: 1.5rem;
-        }}
-        [data-testid="stSidebar"] a {{
-            color: {COLORS['text']} !important;
+
+        /* Ссылки меню — фон = фон сайдбара */
+        [data-testid="stSidebar"] a,
+        [data-testid="stSidebarNav"] a,
+        [data-testid="stSidebarNavLink"] {{
+            background: {COLORS['sidebar_bg']} !important;
+            background-color: {COLORS['sidebar_bg']} !important;
+            color: {COLORS['sidebar_text']} !important;
             font-size: 0.9rem !important;
             font-weight: 500 !important;
             padding: 0.5rem 0.75rem !important;
-            border-radius: 6px !important;
+            border-radius: 8px !important;
+            margin-bottom: 4px !important;
+            border: none !important;
+            box-shadow: none !important;
             transition: all 0.15s ease;
         }}
-        [data-testid="stSidebar"] a:hover {{
-            background: {COLORS['bg_muted']} !important;
-            color: {COLORS['green_dark']} !important;
-        }}
-        [data-testid="stSidebar"] [aria-current="page"] {{
-            background: {COLORS['green_light']} !important;
-            color: {COLORS['green_dark']} !important;
+
+        /* Hover */
+        [data-testid="stSidebar"] a:hover,
+        [data-testid="stSidebarNav"] a:hover,
+        [data-testid="stSidebarNavLink"]:hover {{
+            background: {COLORS['sidebar_hover']} !important;
+            background-color: {COLORS['sidebar_hover']} !important;
+            color: {COLORS['sidebar_active_text']} !important;
         }}
 
-        /* === КАРТОЧКИ === */
+        /* Активная ссылка — на 2 тона темнее */
+        [data-testid="stSidebar"] a[aria-current="page"],
+        [data-testid="stSidebarNav"] a[aria-current="page"],
+        [data-testid="stSidebar"] [aria-current="page"],
+        [data-testid="stSidebarNav"] [aria-current="page"],
+        section[data-testid="stSidebar"] a[aria-current="page"],
+        [data-testid="stSidebarNavLink"][aria-current="page"],
+        [data-testid="stSidebar"] li[aria-selected="true"] > a,
+        [data-testid="stSidebarNav"] li[aria-selected="true"] > a,
+        [data-testid="stSidebar"] a.nav-active {{
+            background: #c6d3a2 !important;
+            background-color: #c6d3a2 !important;
+            color: #2d3f18 !important;
+            font-weight: 700 !important;
+            border: none !important;
+            border-radius: 8px !important;
+        }}
+        /* Активная ссылка — при любом состоянии (hover, focus, active) */
+        [data-testid="stSidebar"] a[aria-current="page"],
+        [data-testid="stSidebar"] a[aria-current="page"]:hover,
+        [data-testid="stSidebar"] a[aria-current="page"]:focus,
+        [data-testid="stSidebar"] a[aria-current="page"]:active,
+        [data-testid="stSidebarNav"] a[aria-current="page"],
+        [data-testid="stSidebarNav"] a[aria-current="page"]:hover,
+        [data-testid="stSidebarNav"] a[aria-current="page"]:focus,
+        [data-testid="stSidebarNav"] a[aria-current="page"]:active {{
+            background: #c6d3a2 !important;
+            background-color: #c6d3a2 !important;
+            color: #2d3f18 !important;
+            font-weight: 700 !important;
+            border-radius: 8px !important;
+        }}
+
+        /* Текст */
+        [data-testid="stSidebar"] a[aria-current="page"] *,
+        [data-testid="stSidebarNav"] a[aria-current="page"] *,
+        [data-testid="stSidebar"] a.nav-active * {{
+            color: #2d3f18 !important;
+            font-weight: 700 !important;
+        }}
+
+        /* Hover НЕ перебивает активную */
+        [data-testid="stSidebar"] a.nav-active:hover,
+        [data-testid="stSidebar"] a[aria-current="page"]:hover {{
+            background: #c6d3a2 !important;
+            background-color: #c6d3a2 !important;
+            color: #2d3f18 !important;
+        }}
+
+        /* Заголовки секций */
+        [data-testid="stSidebarNav"] > div > span,
+        [data-testid="stSidebar"] h4 {{
+            color: {COLORS['sidebar_text']} !important;
+            font-weight: 700 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.75rem !important;
+            background: transparent !important;
+        }}
+
+        /* Кнопки в сайдбаре (EN, Тёмная) — как фон сайдбара */
+        [data-testid="stSidebar"] button,
+        [data-testid="stSidebar"] .stButton > button,
+        [data-testid="stSidebar"] button[kind="secondary"] {{
+            background: {COLORS['sidebar_bg']} !important;
+            background-color: {COLORS['sidebar_bg']} !important;
+            color: {COLORS['sidebar_text']} !important;
+            border: 1px solid {COLORS['sidebar_border']} !important;
+            box-shadow: none !important;
+            font-weight: 600 !important;
+            font-size: 0.9rem !important;
+            border-radius: 8px !important;
+        }}
+        [data-testid="stSidebar"] button:hover {{
+            background: {COLORS['sidebar_hover']} !important;
+            color: {COLORS['sidebar_active_text']} !important;
+            border-color: {COLORS['sidebar_active_text']} !important;
+            transform: none !important;
+        }}
+
+        /* Стрелка свернуть — фон как у активной ссылки */
+        [data-testid="stSidebarCollapseButton"],
+        [data-testid="stSidebarCollapseButton"] button,
+        [data-testid="stSidebarCollapsedControl"],
+        [data-testid="stSidebarCollapsedControl"] button,
+        [data-testid="stSidebar"] [data-testid="stBaseButton-header"],
+        [data-testid="stSidebar"] [data-testid="baseButton-header"] {{
+            background: {COLORS['sidebar_active_bg']} !important;
+            background-color: {COLORS['sidebar_active_bg']} !important;
+            color: {COLORS['sidebar_active_text']} !important;
+            border: none !important;
+            border-radius: 8px !important;
+            box-shadow: none !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }}
+        [data-testid="stSidebarCollapseButton"] button:hover,
+        [data-testid="stSidebarCollapsedControl"] button:hover {{
+            background: {COLORS['sidebar_hover']} !important;
+            color: {COLORS['sidebar_active_text']} !important;
+        }}
+        [data-testid="stSidebarCollapseButton"] svg,
+        [data-testid="stSidebarCollapsedControl"] svg {{
+            fill: {COLORS['sidebar_active_text']} !important;
+            color: {COLORS['sidebar_active_text']} !important;
+        }}
+
+        /* ============ КАРТОЧКИ ============ */
         .card {{
             background: {COLORS['card']};
             padding: 1.5rem;
@@ -139,30 +268,13 @@ def inject_css():
             border-color: {COLORS['border_strong']};
             box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
         }}
+        .card-air {{ background: {COLORS['air_light']}; border-color: {COLORS['air']}; }}
+        .card-water {{ background: {COLORS['water_light']}; border-color: {COLORS['water']}; }}
+        .card-green {{ background: {COLORS['green_light']}; border-color: {COLORS['green']}; }}
+        .card-warm {{ background: {COLORS['warm_light']}; border-color: {COLORS['warm']}; }}
+        .card-climate {{ background: {COLORS['climate_light']}; border-color: {COLORS['climate']}; }}
 
-        /* Цветные карточки модулей */
-        .card-air {{
-            background: {COLORS['air_light']};
-            border-color: {COLORS['air']};
-        }}
-        .card-water {{
-            background: {COLORS['water_light']};
-            border-color: {COLORS['water']};
-        }}
-        .card-green {{
-            background: {COLORS['green_light']};
-            border-color: {COLORS['green']};
-        }}
-        .card-warm {{
-            background: {COLORS['warm_light']};
-            border-color: {COLORS['warm']};
-        }}
-        .card-climate {{
-            background: {COLORS['climate_light']};
-            border-color: {COLORS['climate']};
-        }}
-
-        /* === МЕТРИКИ === */
+        /* ============ МЕТРИКИ ============ */
         .stMetric {{
             background: {COLORS['card']};
             padding: 1.25rem;
@@ -181,11 +293,9 @@ def inject_css():
             font-weight: 700 !important;
             color: {COLORS['text']} !important;
         }}
-        .stMetric [data-testid="stMetricDelta"] {{
-            font-size: 0.85rem !important;
-        }}
+        .stMetric [data-testid="stMetricDelta"] {{ font-size: 0.85rem !important; }}
 
-        /* === КНОПКИ === */
+        /* ============ КНОПКИ (вне сайдбара) ============ */
         .stButton > button {{
             background: {COLORS['text']};
             color: white;
@@ -204,18 +314,7 @@ def inject_css():
             box-shadow: 0 0 0 3px {COLORS['green_light']} !important;
         }}
 
-        /* Secondary кнопки */
-        .stButton > button[kind="secondary"] {{
-            background: transparent;
-            color: {COLORS['text']};
-            border: 1px solid {COLORS['border_strong']};
-        }}
-        .stButton > button[kind="secondary"]:hover {{
-            background: {COLORS['bg_muted']};
-            border-color: {COLORS['text_muted']};
-        }}
-
-        /* === ФОРМЫ === */
+        /* ============ ФОРМЫ ============ */
         .stTextInput input,
         .stTextArea textarea,
         .stSelectbox > div > div,
@@ -230,7 +329,7 @@ def inject_css():
             box-shadow: 0 0 0 3px {COLORS['green_light']} !important;
         }}
 
-        /* === ТАБЫ === */
+        /* ============ ТАБЫ ============ */
         .stTabs [data-baseweb="tab-list"] {{
             gap: 8px;
             border-bottom: 1px solid {COLORS['border']};
@@ -248,7 +347,7 @@ def inject_css():
             color: {COLORS['green_dark']} !important;
         }}
 
-        /* === ТАБЛИЦЫ === */
+        /* ============ ТАБЛИЦЫ ============ */
         .stDataFrame {{
             font-size: 13px;
             border-radius: 8px;
@@ -256,7 +355,7 @@ def inject_css():
             overflow: hidden;
         }}
 
-        /* === РЕКОМЕНДАЦИИ === */
+        /* ============ РЕКОМЕНДАЦИИ ============ */
         .recommendation {{
             padding: 1rem 1.25rem;
             border-radius: 10px;
@@ -274,7 +373,7 @@ def inject_css():
             background: #fee2e2;
         }}
 
-        /* === ХЕДЕР === */
+        /* ============ ХЕДЕР ============ */
         .app-header {{
             display: flex;
             justify-content: space-between;
@@ -292,19 +391,11 @@ def inject_css():
             color: {COLORS['text']};
             letter-spacing: -0.01em;
         }}
-        .app-logo svg {{
-            width: 28px;
-            height: 28px;
-        }}
+        .app-logo svg {{ width: 28px; height: 28px; }}
 
-        /* === HERO === */
-        .hero {{
-            padding: 3rem 0 2rem 0;
-        }}
-        .hero h1 {{
-            font-size: 3rem !important;
-            line-height: 1.1 !important;
-        }}
+        /* ============ HERO ============ */
+        .hero {{ padding: 3rem 0 2rem 0; }}
+        .hero h1 {{ font-size: 3rem !important; line-height: 1.1 !important; }}
         .hero .lead {{
             font-size: 1.15rem;
             color: {COLORS['text_muted']};
@@ -312,7 +403,7 @@ def inject_css():
             max-width: 640px;
         }}
 
-        /* === ФУТЕР === */
+        /* ============ ФУТЕР ============ */
         .app-footer {{
             margin-top: 4rem;
             padding: 2rem 0;
@@ -321,6 +412,26 @@ def inject_css():
             font-size: 0.85rem;
             text-align: center;
         }}
+
+        /* Кнопка свернуть — всегда видна */
+        [data-testid="stSidebarCollapseButton"],
+        [data-testid="stSidebarCollapseButton"] button,
+        [data-testid="stSidebar"] [data-testid="stBaseButton-header"],
+        [data-testid="stSidebar"] [data-testid="baseButton-header"] {{
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            background: #c6d3a2 !important;
+            color: #2d3f18 !important;
+            border: none !important;
+            border-radius: 8px !important;
+            box-shadow: none !important;
+        }}
+
+        [data-testid="stSidebarCollapseButton"] svg,
+        [data-testid="stSidebarCollapsedControl"] svg {{
+            fill: #2d3f18 !important;
+        }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -328,7 +439,6 @@ def inject_css():
 # ============= КОМПОНЕНТЫ =============
 
 def logo_svg(color: str = None) -> str:
-    """SVG-логотип — стилизованный лист + город."""
     c = color or COLORS["green_dark"]
     return f'''
     <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="none">
@@ -344,7 +454,6 @@ def logo_svg(color: str = None) -> str:
 
 
 def header(lang: str = "ru"):
-    """Хедер с логотипом."""
     from auth_utils import is_logged_in, get_user
 
     if is_logged_in():
@@ -372,7 +481,6 @@ def header(lang: str = "ru"):
         f'<div>{right_html}</div>'
         f'</div>'
     )
-
     st.markdown(html, unsafe_allow_html=True)
 
 
@@ -390,6 +498,7 @@ def footer(lang: str = "ru"):
 
 def recommendation(text: str, level: str = "info"):
     st.markdown(f'<div class="recommendation {level}">{text}</div>', unsafe_allow_html=True)
+
 
 def card(title: str, body: str, variant: str = "default"):
     cls = "card" if variant == "default" else f"card card-{variant}"
