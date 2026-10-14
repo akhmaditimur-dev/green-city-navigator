@@ -27,6 +27,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://greencity:greencity@db:5432/greencity
+    env_file:
+      - .env
     volumes:
       - .:/app
 

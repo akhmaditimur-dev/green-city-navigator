@@ -35,3 +35,17 @@ class FloodRisk(Base):
     category = Column(String(20))   # low/medium/high/critical
     lat = Column(Float)
     lon = Column(Float)
+
+
+class Report(Base):
+    __tablename__ = "reports"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100))
+    category = Column(String(50), nullable=False)
+    description = Column(String(1000), nullable=False)
+    photo_url = Column(String(500))
+    lat = Column(Float)
+    lon = Column(Float)
+    status = Column(String(20), default="new")
+    created_at = Column(DateTime, default=datetime.utcnow)

@@ -5,7 +5,17 @@ from typing import Optional
 
 from src.db.models import SessionLocal, Station, Measurement
 
+from src.auth.init_admins import init_superadmins
+from src.auth.routes import router as auth_router
+
 app = FastAPI(title="Green City Navigator")
+
+# При старте — инициализация супер-админов
+@app.on_event("startup")
+def startup_event():
+    init_superadmins()
+
+app.include_router(auth_router)
 
 
 @app.get("/")
@@ -177,6 +187,60 @@ def get_flood_risk():
             "lat": r.lat,
             "lon": r.lon,
             "timestamp": r.timestamp.isoformat(),
+        }
+        for r in rows
+    ]
+    session.close()
+    return result
+
+
+from src.db.water_models import Report
+from pydantic import BaseModel
+
+
+class ReportCreate(BaseModel):
+    name: str | None = None
+    category: str
+    description: str
+    photo_url: str | None = None
+    lat: float | None = None
+    lon: float | None = None
+
+
+@app.post("/reports")
+def create_report(report: ReportCreate):
+    session = SessionLocal()
+    r = Report(
+        name=report.name,
+        category=report.category,
+        description=report.description,
+        photo_url=report.photo_url,
+        lat=report.lat,
+        lon=report.lon,
+        status="new",
+    )
+    session.add(r)
+    session.commit()
+    result = {"id": r.id, "status": r.status}
+    session.close()
+    return result
+
+
+@app.get("/reports")
+def list_reports():
+    session = SessionLocal()
+    rows = session.query(Report).order_by(Report.created_at.desc()).all()
+    result = [
+        {
+            "id": r.id,
+            "name": r.name,
+            "category": r.category,
+            "description": r.description,
+            "photo_url": r.photo_url,
+            "lat": r.lat,
+            "lon": r.lon,
+            "status": r.status,
+            "created_at": r.created_at.isoformat(),
         }
         for r in rows
     ]

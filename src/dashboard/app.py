@@ -1,154 +1,148 @@
 import streamlit as st
 import requests
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
+
+from styles import inject_css, header, footer
+from i18n import t, lang_switch, get_lang
 
 API = "http://api:8000"
 
-st.set_page_config(page_title="Green City Navigator", layout="wide", initial_sidebar_state="collapsed")
-
-st.markdown("""
-<style>
-    html, body, [class*="css"] {
-        font-size: 13px;
-    }
-    h1 { font-size: 1.6rem !important; }
-    h2 { font-size: 1.3rem !important; }
-    h3 { font-size: 1.1rem !important; }
-    .stMetric label { font-size: 0.8rem !important; }
-    .stMetric [data-testid="stMetricValue"] { font-size: 1.2rem !important; }
-    .stMetric [data-testid="stMetricDelta"] { font-size: 0.75rem !important; }
-    .stDataFrame { font-size: 12px; }
-</style>
-""", unsafe_allow_html=True)
-
-st.title("🌿 Green City Navigator — Худжанд")
-
-# --- Станции ---
-stations = requests.get(f"{API}/stations").json()
-
-# --- Карта ---
-st.header("Карта станций")
-
-map_df = pd.DataFrame([
-    {
-        "name": s["name"],
-        "lat": s["lat"],
-        "lon": s["lon"],
-        "pm25": requests.get(f"{API}/current/{s['id']}").json()["pm25"],
-    }
-    for s in stations
-])
-
-fig_map = px.scatter_mapbox(
-    map_df,
-    lat="lat",
-    lon="lon",
-    size="pm25",
-    color="pm25",
-    hover_name="name",
-    color_continuous_scale="RdYlGn_r",
-    zoom=12,
-    height=500,
-)
-fig_map.update_layout(mapbox_style="open-street-map")
-st.plotly_chart(fig_map, use_container_width=True)
-
-# --- Текущие значения ---
-st.header("Текущее состояние")
-
-cols = st.columns(len(stations))
-for i, s in enumerate(stations):
-    current = requests.get(f"{API}/current/{s['id']}").json()
-    with cols[i]:
-        st.metric(s["name"], f"{current['pm25']:.1f} мкг/м³", f"AQI {current['aqi']}")
-
-# --- История PM2.5 ---
-st.header("История PM2.5 (7 дней)")
-
-station_id = st.selectbox(
-    "Станция",
-    options=[s["id"] for s in stations],
-    format_func=lambda x: next(s["name"] for s in stations if s["id"] == x),
+# --- Настройка ---
+st.set_page_config(
+    page_title="Green City Navigator",
+    page_icon="🌿",
+    layout="wide",
+    initial_sidebar_state="expanded",
 )
 
-data = requests.get(f"{API}/measurements/{station_id}?days=7").json()
-df = pd.DataFrame(data)
-df["timestamp"] = pd.to_datetime(df["timestamp"])
+inject_css()
 
-fig = px.line(df, x="timestamp", y="pm25", title="PM2.5")
-st.plotly_chart(fig, use_container_width=True)
+# --- Сайдбар ---
+lang_switch()
 
-# --- Прогноз ---
-st.header("Прогноз на 24 часа")
+st.sidebar.markdown("---")
+st.sidebar.markdown(f"### {t('menu_home')}")
+st.sidebar.markdown(f"### {t('menu_air')}")
+st.sidebar.markdown(f"### {t('menu_water')}")
+st.sidebar.markdown(f"### {t('menu_participate')}")
+st.sidebar.markdown(f"### {t('menu_about')}")
 
-forecast = requests.get(f"{API}/forecast/{station_id}?hours=24").json()
-fdf = pd.DataFrame(forecast["forecast"])
+# --- Хедер ---
+header(lang=get_lang())
 
-fig2 = go.Figure()
-fig2.add_trace(go.Scatter(x=fdf["hour"], y=fdf["pm25"], mode="lines+markers", name="Прогноз"))
-fig2.add_hline(y=35, line_dash="dash", line_color="orange", annotation_text="Средний порог")
-fig2.add_hline(y=75, line_dash="dash", line_color="red", annotation_text="Высокий порог")
-fig2.update_layout(xaxis_title="Часы", yaxis_title="PM2.5, мкг/м³")
-st.plotly_chart(fig2, use_container_width=True)
+# --- Заголовок ---
+st.title(f"🌿 {t('home_title')} — {t('city')}")
+st.markdown(f"*{t('home_subtitle')}*")
 
+# --- Данные ---
+try:
+    stations_air = requests.get(f"{API}/stations", timeout=5).json()
+    stations_water = requests.get(f"{API}/water/stations", timeout=5).json()
+    flood = requests.get(f"{API}/flood/risk", timeout=5).json()
+except Exception as e:
+    st.error(f"Ошибка подключения к API: {e}")
+    st.stop()
 
-# --- МОДУЛЬ ВОДА ---
-st.header("💧 Водные ресурсы")
+# --- Текущие метрики ---
+col1, col2, col3, col4 = st.columns(4)
 
-water_stations = requests.get(f"{API}/water/stations").json()
+# Воздух — среднее по станциям
+if stations_air:
+    pm_values = []
+    for s in stations_air:
+        try:
+            cur = requests.get(f"{API}/current/{s['id']}", timeout=3).json()
+            pm_values.append(cur["pm25"])
+        except:
+            pass
+    avg_pm25 = sum(pm_values) / len(pm_values) if pm_values else 0
+    aqi = int(avg_pm25 * 2)
 
-# Карта рек и риска паводков
-flood_data = requests.get(f"{API}/flood/risk").json()
-
-if flood_data:
-    flood_df = pd.DataFrame(flood_data)
-    fig_flood = px.scatter_mapbox(
-        flood_df,
-        lat="lat",
-        lon="lon",
-        size="risk_score",
-        color="risk_score",
-        hover_name="district",
-        color_continuous_scale="RdYlGn_r",
-        zoom=11,
-        height=500,
-        range_color=[0, 100],
-    )
-    fig_flood.update_layout(mapbox_style="open-street-map", title="Риск паводков по районам")
-    st.plotly_chart(fig_flood, use_container_width=True)
-
-# Текущее состояние рек
-st.subheader("Расход воды на станциях")
-cols_w = st.columns(len(water_stations))
-for i, ws in enumerate(water_stations):
-    current = requests.get(f"{API}/water/current/{ws['id']}").json()
-    with cols_w[i]:
+    with col1:
         st.metric(
-            ws["name"],
-            f"{current['flow_m3s']} м³/с",
-            f"уровень {current['level_m']} м"
+            label=t("current_air"),
+            value=f"{avg_pm25:.0f} мкг/м³",
+            delta=f"AQI {aqi}",
         )
 
-# График расхода
-st.subheader("Расход воды (7 дней)")
-river_id = st.selectbox(
-    "Речная станция",
-    options=[ws["id"] for ws in water_stations],
-    format_func=lambda x: next(ws["name"] for ws in water_stations if ws["id"] == x),
-)
+# Вода — среднее по станциям
+if stations_water:
+    flow_values = []
+    for s in stations_water:
+        try:
+            cur = requests.get(f"{API}/water/current/{s['id']}", timeout=3).json()
+            flow_values.append(cur["flow_m3s"])
+        except:
+            pass
+    avg_flow = sum(flow_values) / len(flow_values) if flow_values else 0
 
-flow_data = requests.get(f"{API}/water/flow/{river_id}?days=7").json()
-if flow_data:
-    fdf = pd.DataFrame(flow_data)
-    fdf["timestamp"] = pd.to_datetime(fdf["timestamp"])
-    fig_flow = px.line(fdf, x="timestamp", y="flow_m3s", title="Расход воды, м³/с")
-    st.plotly_chart(fig_flow, use_container_width=True)
+    with col2:
+        st.metric(
+            label=t("current_water"),
+            value=f"{avg_flow:.0f} м³/с",
+        )
 
-# Таблица риска
-st.subheader("Риск паводков")
-if flood_data:
-    risk_df = pd.DataFrame(flood_data)[["district", "risk_score", "category"]]
-    risk_df.columns = ["Район", "Риск", "Категория"]
-    st.dataframe(risk_df, use_container_width=True)
+# Риск паводков — максимальный
+if flood:
+    max_risk = max(r["risk_score"] for r in flood)
+    max_district = next(r["district"] for r in flood if r["risk_score"] == max_risk)
+
+    with col3:
+        st.metric(
+            label=t("current_risk"),
+            value=f"{max_risk:.0f}",
+            delta=max_district,
+        )
+
+# Температура — с первой станции воздуха
+if stations_air:
+    try:
+        first = stations_air[0]
+        cur = requests.get(f"{API}/current/{first['id']}", timeout=3).json()
+        # Температура не в /current, добавим позже
+        with col4:
+            st.metric(
+                label=t("current_temp"),
+                value="—",
+            )
+    except:
+        pass
+
+st.markdown("---")
+
+# --- Быстрые ссылки ---
+st.subheader(t("quick_links"))
+
+link_col1, link_col2, link_col3 = st.columns(3)
+
+with link_col1:
+    st.markdown(f"""
+    <div class="card">
+        <h3>💨 {t('menu_air')}</h3>
+        <p>PM2.5, карта станций, прогноз на 24 часа</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+with link_col2:
+    st.markdown(f"""
+    <div class="card">
+        <h3>💧 {t('menu_water')}</h3>
+        <p>Расход воды, риск паводков, прогноз</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+with link_col3:
+    st.markdown(f"""
+    <div class="card">
+        <h3>📢 {t('menu_participate')}</h3>
+        <p>Сообщить о проблеме, карта обращений</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+# --- Последнее обновление ---
+st.markdown("---")
+last_update = pd.Timestamp.now().strftime("%d.%m.%Y %H:%M")
+st.caption(f"{t('last_update')}: {last_update}")
+
+# --- Футер ---
+footer(lang=get_lang())
