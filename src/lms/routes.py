@@ -408,3 +408,21 @@ def admin_list_lessons(
     ]
     session.close()
     return result
+
+@router.put("/admin/lessons/{lesson_id}")
+def admin_update_lesson(
+    lesson_id: int,
+    data: LessonCreate,
+    current: User = Depends(require_role("admin", "superadmin")),
+):
+    session = SessionLocal()
+    l = session.query(Lesson).filter_by(id=lesson_id).first()
+    if not l:
+        session.close()
+        raise HTTPException(404, "Урок не найден")
+
+    for field, value in data.dict().items():
+        setattr(l, field, value)
+    session.commit()
+    session.close()
+    return {"status": "ok", "id": lesson_id}
